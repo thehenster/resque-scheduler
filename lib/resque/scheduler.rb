@@ -93,6 +93,9 @@ module Resque
         klass_name = config['class'] || config[:class]
         params = args.nil? ? [] : Array(args)
         queue = config['queue'] || config[:queue] || Resque.queue_from_class(constantize(klass_name))
+        if config[:just_once]
+          Resque::Job.destroy(queue, klass_name, *params)
+        end
         Resque::Job.create(queue, klass_name, *params)
       end
 

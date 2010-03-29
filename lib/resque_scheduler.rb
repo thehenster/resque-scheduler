@@ -25,12 +25,12 @@ module ResqueScheduler
   #   an array, each element in the array is passed as a separate param,
   #   otherwise params is passed in as the only parameter to perform.
   def schedule=(schedule_hash)
-    @schedule = schedule_hash
+    redis[:resque_schedule_hash] = schedule_hash.to_yaml
   end
 
   # Returns the schedule hash
   def schedule
-    @schedule ||= {}
+    YAML.load(redis[:resque_schedule_hash])
   end
 
   # This method is nearly identical to +enqueue+ only it also
