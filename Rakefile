@@ -26,7 +26,7 @@ begin
   require 'resque_scheduler/version'
 
   Jeweler::Tasks.new do |gemspec|
-    gemspec.name = "resque-scheduler"
+    gemspec.name = "thehenster-resque-scheduler"
     gemspec.summary = "Light weight job scheduling on top of Resque"
     gemspec.description = %{Light weight job scheduling on top of Resque.
   Adds methods enqueue_at/enqueue_in to schedule jobs in the future.
