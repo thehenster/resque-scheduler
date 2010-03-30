@@ -37,7 +37,7 @@ begin
     gemspec.version = ResqueScheduler::Version
 
     gemspec.add_dependency "resque", ">= 1.5.0"
-    gemspec.add_dependency "active_support"
+    gemspec.add_dependency "activesupport"
     gemspec.add_dependency "rufus-scheduler"
     gemspec.add_development_dependency "jeweler"
     gemspec.add_development_dependency "mocha"

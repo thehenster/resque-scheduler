@@ -21,7 +21,7 @@ module ResqueScheduler
             to_time = to_time.to_time if to_time.respond_to?(:to_time)
             distance_in_minutes = (((to_time - from_time).abs)/60).round
             distance_in_seconds = ((to_time - from_time).abs).round
-
+                        
             case distance_in_minutes
               when 0..1
                 return (distance_in_minutes == 0) ? 'less than a minute' : '1 minute' unless include_seconds
@@ -33,7 +33,7 @@ module ResqueScheduler
                   when 40..59 then 'less than a minute'
                   else             '1 minute'
                 end
-
+          
               when 2..44           then "#{distance_in_minutes} minutes"
               when 45..89          then 'about 1 hour'
               when 90..1439        then "about #{(distance_in_minutes.to_f / 60.0).round} hours"
