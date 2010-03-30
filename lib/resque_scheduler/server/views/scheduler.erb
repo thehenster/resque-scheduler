@@ -11,11 +11,14 @@
     <th>Name</th>
     <th>Description</th>
     <th>Cron</th>
+		<th>Next Run</th>
     <th>Class</th>
     <th>Queue</th>
+		<th>Just Once</th>
     <th>Arguments</th>
   </tr>
-  <% Resque.schedule.each do |name, config| %>
+	<% ary = Resque.schedule.to_a.sort{|a,b| a['name'] <=> b['name'] } %>
+  <% ary.each do |name, config| %>
     <tr>
       <td>
         <form action="<%= url "/schedule/requeue" %>" method="post">
@@ -26,8 +29,10 @@
       <td><%= h name %></td>
       <td><%= h config['description'] %></td>
       <td style="white-space:nowrap"><%= h config['cron'] %></td>
+			<td><%= distance_of_time_in_words(Time.now, Rufus::CronLine.new(config['cron']).next_time, true) %><br /><span style="color:#888;font-size:85%;"><%= (Rufus::CronLine.new(config['cron']).next_time) %></span></td>
       <td><%= h config['class'] %></td>
       <td><%= h config['queue'] || queue_from_class_name(config['class']) %></td>
+			<td><%= h config['just_once'].inspect %></td>
       <td><%= h config['args'].inspect %></td>
     </tr>
   <% end %>

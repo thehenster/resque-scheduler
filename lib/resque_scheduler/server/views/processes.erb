@@ -1,0 +1,10 @@
+<h1>Resque Processes</h1>
+
+<p class='intro'>
+  The list below contains all processes matching 'resque' but does not include 'grep'.
+</p>
+
+
+<p>
+	<%= %x(ps aux | grep resque).split("\n").delete_if{|s| s.include?('grep') }.join("<br />") %>
+</p>
