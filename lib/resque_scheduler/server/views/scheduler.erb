@@ -17,27 +17,52 @@
 		<th>Just Once</th>
     <th>Arguments</th>
   </tr>
-	<% ary = Resque.schedule.to_a.sort{|a,b| a[0] <=> b[0] } %>
-  <% ary.each do |e| %>
-	<% 
-		name = e[0]
-		config = e[1]
+
+	<%
+	grouped_hash = {}
+	ungrouped_hash = {}
+	Resque.schedule.each do |k,v|
+		if !v["group"].to_s.strip.empty?
+			grouped_hash[v["group"]] ||= {}
+			grouped_hash[v["group"]][k] = v
+		else
+			ungrouped_hash[k] = v
+		end 
+	end	
 	%>
-    <tr>
-      <td>
-        <form action="<%= url "/schedule/requeue" %>" method="post">
-          <input type="hidden" name="job_name" value="<%= h name %>">
-          <input type="submit" value="Queue now">
-        </form>
-      </td>
-      <td><%= h name %></td>
-      <td><%= h config['description'] %></td>
-      <td style="white-space:nowrap"><%= h config['cron'] %></td>
-			<td><%= distance_of_time_in_words(Time.now, Rufus::CronLine.new(config['cron']).next_time, true) rescue nil %><br /><span style="color:#888;font-size:85%;"><%= (Rufus::CronLine.new(config['cron']).next_time) rescue nil %></span></td>
-      <td><%= h config['class'] %></td>
-      <td><%= h config['queue'] || queue_from_class_name(config['class']) %></td>
-			<td><%= h config['just_once'].inspect %></td>
-      <td><%= h config['args'].inspect %></td>
-    </tr>
-  <% end %>
+	
+	<% all_ary = grouped_hash.to_a %>
+	<% all_ary << ["Misc", ungrouped_hash] %>
+	<% all_ary.each do |group| %>
+		<% group_name = group[0] %>
+		<% ary = group[1] %>
+		
+		<tr><td colspan="9" style="color:darkgreen;font-weight:bold;"><%= group_name %></td></tr>
+		
+		<% ary = ary.sort{|a,b| a[0] <=> b[0] } %>
+	  <% ary.each do |e| %>
+		<% 
+			name = e[0]
+			config = e[1]
+		%>
+	    <tr>
+	      <td>
+	        <form action="<%= url "/schedule/requeue" %>" method="post">
+	          <input type="hidden" name="job_name" value="<%= h name %>">
+	          <input type="submit" value="Queue now">
+	        </form>
+	      </td>
+	      <td><%= h name %></td>
+	      <td><%= h config['description'] %></td>
+	      <td style="white-space:nowrap"><%= h config['cron'] %></td>
+				<td><%= distance_of_time_in_words(Time.now, Rufus::CronLine.new(config['cron']).next_time, true) rescue nil %><br /><span style="color:#888;font-size:85%;"><%= (Rufus::CronLine.new(config['cron']).next_time) rescue nil %></span></td>
+	      <td><%= h config['class'] %></td>
+	      <td><%= h config['queue'] || queue_from_class_name(config['class']) %></td>
+				<td><%= h config['just_once'].inspect %></td>
+	      <td><%= h config['args'].inspect %></td>
+	    </tr>
+	  <% end %>
+	
+	<% end %>
+
 </table>
