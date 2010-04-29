@@ -2,7 +2,15 @@ require 'rufus/scheduler'
 require 'thwait'
 
 module Resque
-
+  
+  class JobWithStatus
+    def self.enqueue_with_queue(queue, klass, options = {})
+      uuid = Resque::Status.create
+      Job.create(queue, klass, uuid, options)
+      uuid
+    end
+  end
+  
   class Scheduler
 
     extend Resque::Helpers
@@ -96,7 +104,11 @@ module Resque
         if (config[:just_once] || config['just_once'])
           Resque::Job.destroy(queue, klass_name, *params)
         end
-        Resque::Job.create(queue, klass_name, *params)
+        if klass_name.include?("WithStatus")
+          Resque::JobWithStatus.enqueue_with_queue(queue, klass_name, *params)
+        else
+          Resque::Job.create(queue, klass_name, *params)
+        end
       end
 
       def rufus_scheduler
